@@ -57,7 +57,25 @@ function test_Z()
    @test z_mat2[3,3]==-1.0
 end
 
+function test_H()
+   x=ket_zero(1)  #  |0>
+   H!(x,1)        #  sqrt(1/2) * ( |0> + |1> )
+   @test x≈sqrt(1/2)*[1.0,1.0]
+   H!(x,1)        #  H^2 |0> = |0>
+   @test x≈[1.0,0]
+
+   x2=ket_number(2,1)  # x2=|01>
+   y=H(x2,1)
+   @test y≈sqrt(1/2)*[1.0,-1.0,0,0]
+
+   h_mat1=H(1,2)
+   @test h_mat1[2,2]≈-sqrt(1/2)
+   h_mat2=H(2,2)
+   @test h_mat2[2,2]≈sqrt(1/2)
+end
+
 # finally run tests
 test_constructors()
 test_X()
 test_Z()
+test_H()

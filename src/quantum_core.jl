@@ -120,20 +120,21 @@ end
 """
 function Z!(v::Vector,i)
    n=length(v)
-   d=Int64(log2(n))
-   bits=zeros(Int64,d)
+   mask=1<<(i-1) #only 1 at i'th bit (1-based)
    for j=0:(n-1)
-      digits!(bits,j,base=2)
-      #println("j=$(j) bits=$(bits)")
-      if bits[i]==1
-	v[j+1]=-v[j+1]
+      #println("j=$(j)")
+      if (j&mask)==0
+         i1=j+1
+         i2=(j|mask)+1
+         #println("Change sign to $(i2)")
+         v[i2]=-v[i2]
       end
    end
 end
 
 """
  function Z(v::Vector,i)
- Apply Z to the i'th bit (1-based) of an array of d qbits IN PLACE.
+ Apply Z to the i'th bit (1-based) of an array of d qbits.
  v=[0,1,0,0];w=Z!(v,1)   #  |01>
  results in w=[0,-1,0,0] # -|01>
 """
@@ -146,7 +147,7 @@ end
 """
  function Z(i::Integer,d::Integer)
  Z operator for the i'th bit (1-based) of an array of d qbits
-  Z=X(2,1)
+  v=Z(1,2)
   returns
   [0 1;1 0]
 """
@@ -168,23 +169,49 @@ end
 """
 function H!(v::Vector,i)
    n=length(v)
-   d=Int64(log2(n))
-   bits=zeros(Int64,d)
+   mask=1<<(i-1) #only 1 at i'th bit (1-based)
    for j=0:(n-1)
-      digits!(bits,j,base=2)
-      #println("j=$(j) bits=$(bits)")
-      if bits[i]==0
-        i1=undigit(bits,base=2)
-	bits[i]=1-bits[i]
-        i2=undigit(bits,base=2)
-	#println("swap $(i1) and $(i2)")
-        k0=v[i1+1]
-	k1=v[i2+1]
-	a=sqrt(0.5)
-	v[i1+1]=a*k0+a*k1
-	v[i2+1]=a*k0-a*k1
+      #println("j=$(j)")
+      if (j&mask)==0
+         i1=j+1
+         i2=(j|mask)+1
+         #println("H on $(i1) and $(i2)")
+         k0=v[i1]
+ 	 k1=v[i2]
+	 a=sqrt(0.5)
+	 v[i1]=a*k0+a*k1
+	 v[i2]=a*k0-a*k1
       end
    end
+end
+
+"""
+ function H(v::Vector,i)
+ Apply Hadamard operaor H to the i'th bit (1-based) of an array of d qbits.
+ v=[0,0,0,0];w=H!(v,1)   #  |00>
+ results in w=[0,-1,0,0] # sqrt(1/2) ( |00> + |01> )
+"""
+function H(v::Vector,i)
+   res=copy(v)
+   H!(res,i)
+   return res
+end
+
+"""
+ function H(i::Integer,d::Integer)
+ Hadamard H operator for the i'th bit (1-based) of an array of d qbits
+  Hm=H(1,1)
+  returns
+  isqrt(1/2) [1 1;1 -1]
+"""
+function H(i::Integer,d::Integer)
+   n=2^d
+   res = zeros(n,n)
+   for j=0:(n-1)
+      res[j+1,j+1]=1.0
+      res[:,j+1]=H(res[:,j+1],i)
+   end
+   return res
 end
 
 #Identities

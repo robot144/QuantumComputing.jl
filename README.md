@@ -19,9 +19,12 @@ While reading "Quantum Computer Science" by M. David Mermin, it made sense for m
 
 ## Some examples
 
-`using QuantumComputing`
-`x=ket_zero(3) # x= |000>`
-`X!(x,1)       # x= |001> operator applied in place`
-`X!(x,2)       # x= |011>`
-
-
+- `using QuantumComputing`
+- `x=ket_zero(3)   # x= |000>`
+- `X!(x,1)         # x= |001> operator applied in place`
+- `X!(x,2)         # x= |011>`
+- `v=ket_zero(2,1) # v= |01>`
+- `Z!(v,1)         # v=-|01>`
+- `w=Z(v,1)        # w= |01>`
+- `p=ket_zero(1)   # p= |0>`
+- `H!(p,1)         # p= sqrt(1/2) (|0> + |1>)`
