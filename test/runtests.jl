@@ -1,4 +1,4 @@
-using calibration
-using Base.Test
+using QuantumComputing
+using Test
 
-include("test_double_pendulum.jl")
+include("test_quantum_core.jl")
